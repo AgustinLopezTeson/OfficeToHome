@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1636742484 source:c:\users\contabilidad\desktop\nueva carpeta (3)\practicalinked\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1636751412 source:c:\users\contabilidad\desktop\nueva carpeta (3)\practicalinked\maspractica.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
