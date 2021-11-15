@@ -3,6 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 
+
+
 typedef struct
 {
     int id;
@@ -12,6 +14,8 @@ typedef struct
 } eEmpleado;
 //View
 void mostrarEmpleadoD(eEmpleado* e);
+void mostrarEmpleadosD(eEmpleado* e, int tam);
+int mostrarEmpleados2(eEmpleado** e, int tam);
 //Contructores
 eEmpleado* new_empleado();
 eEmpleado* new_empleadoParam(int id, char* nombre,char sexo,float sueldo);
@@ -27,12 +31,101 @@ int empleadoGetId(eEmpleado* pEmp, int* pId);
 int empleadoGetNombre(eEmpleado* pEmp, char* nombre);
 int empleadoGetSexo(eEmpleado* pEmp, char* sexo);
 int empleadoGetSueldo (eEmpleado* pEmp, float* sueldo);
-
+//isEmpty
+int inicializarEmpleados(eEmpleado** pEmps, int tam);
+//BuscarLibre
+int buscarLibre(eEmpleado** PEmps, int tam, int* pIndice);
+//Agrandar
+int agrandarArray(eEmpleado*** pEmps, int* tam);
 int main()
 {
+    int pIndice;
+    int tam=3;
+    /*eEmpleado* listaEmp = (eEmpleado*)malloc(sizeof(eEmpleado)*TAM);
 
 
-    eEmpleado* emp2;
+    (listaEmp+0)->id = 10003;
+    strcpy((listaEmp+0)->nombre,"Lucio");
+    (listaEmp+0)->sexo = 'm';
+    (listaEmp+0)->sueldo= 97000;
+
+    (listaEmp+1)->id = 10004;
+    strcpy((listaEmp+1)->nombre,"Tamara");
+    (listaEmp+1)->sexo = 'f';
+    (listaEmp+1)->sueldo= 47500;
+
+    (listaEmp+2)->id = 10005;
+    strcpy((listaEmp+2)->nombre,"Franscisco");
+    (listaEmp+2)->sexo = 'm';
+    (listaEmp+2)->sueldo= 97000;*/
+
+
+    eEmpleado** plista = (eEmpleado**)malloc(sizeof(eEmpleado*)*tam);
+
+    if(!inicializarEmpleados(plista,tam)){
+
+        printf("No se pudo inicializar");
+        exit(1);
+
+    }else{
+
+        printf("Empleados inicializados\n");
+    }
+
+    buscarLibre(plista,tam,&pIndice);
+
+    if(pIndice!= -1){
+    *(plista+pIndice) = new_empleadoParam(10006,"Luis",'m',24000);
+
+    printf("Alta exitosa Luis\n");
+
+    }else{
+        printf("No se encontro lugar\n");
+        }
+
+    buscarLibre(plista,tam,&pIndice);
+
+    if(pIndice!= -1){
+
+    *(plista+pIndice) = new_empleadoParam(10007,"Cristian",'m',27000);
+    printf("Alta exitosa Cristian\n");
+
+    }else{
+        printf("No se encontro lugar\n");
+        }
+
+    buscarLibre(plista,tam,&pIndice);
+
+      if(pIndice!= -1){
+        *(plista+pIndice) = new_empleadoParam(10008,"Ariel",'m',127000);
+
+    printf("Alta exitosa Ariel\n");
+
+    }else{
+        printf("No se encontro lugar\n");
+        }
+
+    buscarLibre(plista,tam,&pIndice);
+      if(pIndice!= -1){
+            *(plista+pIndice) = new_empleadoParam(10008,"Lucio",'m',127000);
+
+            printf("Alta exitosa Lucio\n");
+
+    }else{
+        printf("No consegui lugar para lucio\n\n ");
+       if(agrandarArray(&plista,&tam)){
+
+            buscarLibre(plista,tam,&pIndice);
+                if(pIndice!= -1){
+
+                *(plista+pIndice) = new_empleadoParam(10008,"Lucio",'m',127000);
+                printf("Alta exitosa Lucio\n");
+
+               }
+            }
+        }
+
+ /*   eEmpleado* emp2;
     emp2 = new_empleado();
 
     eEmpleado* emp3;
@@ -52,25 +145,29 @@ int main()
 
     printf("Ingrese el sueldo : \n");
     scanf("%f", &emp2->sueldo);
+*/
+
+   // emp3 = new_empleadoParam(10002,"Ernesto",'m',22500.25);
 
 
-    emp3 = new_empleadoParam(12340,"Juan",'m',22500.25);
+   // mostrarEmpleadoD(emp2);
+   // mostrarEmpleadoD(emp3);
+   // mostrarEmpleadosD(listaEmp,tam);
+        mostrarEmpleados2(plista,tam);
 
 
-    mostrarEmpleadoD(emp2);
-    mostrarEmpleadoD(emp3);
+
+
+
+
+
+
+
+
 
 
     //empleadoDestroy(emp2);
     //empleadoDestroy(emp3);
-
-
-
-
-
-
-
-
 
 
 
@@ -115,17 +212,19 @@ eEmpleado* new_empleadoParam(int id, char* nombre,char sexo,float sueldo)
 
     if(nuevoEmpleado!=NULL)
     {
-       if(!(    empleadoSetId(nuevoEmpleado,id)&&
-                empleadoSetNombre(nuevoEmpleado,nombre)&&
-                empleadoSetSexo(nuevoEmpleado,sexo)&&
-                empleadoSetSueldo(nuevoEmpleado,sueldo)))
-       {
+        if(!(    empleadoSetId(nuevoEmpleado,id)&&
+                 empleadoSetNombre(nuevoEmpleado,nombre)&&
+                 empleadoSetSexo(nuevoEmpleado,sexo)&&
+                 empleadoSetSueldo(nuevoEmpleado,sueldo)))
+        {
             printf("Hubo un problema");
-            free(nuevoEmpleado);
+            empleadoDestroy(nuevoEmpleado);
             nuevoEmpleado=NULL;
         }
 
-    }else{
+    }
+    else
+    {
         printf("No se pudo conseguir memoria");
     }
     return nuevoEmpleado;
@@ -139,7 +238,9 @@ int empleadoSetId(eEmpleado* pEmp, int id)
     {
         pEmp->id=id;
         todoOk =1;
-    }else{
+    }
+    else
+    {
         printf("Problema con el Id");
     }
 
@@ -155,7 +256,9 @@ int empleadoSetSexo(eEmpleado* pEmp, char sexo)
     {
         pEmp->sexo=sexo;
         todoOk =1;
-    }else{
+    }
+    else
+    {
         printf("Problema con el sexo");
     }
 
@@ -172,7 +275,9 @@ int empleadoSetSueldo (eEmpleado* pEmp, float sueldo)
     {
         pEmp->sueldo=sueldo;
         todoOk =1;
-    }else{
+    }
+    else
+    {
         printf("Problema con el Sueldo");
     }
 
@@ -191,7 +296,9 @@ int empleadoSetNombre(eEmpleado* pEmp, char* nombre)
         //nombre[0]= toupper(nombre[0]);
         strcpy(pEmp->nombre,nombre);
         todoOk =1;
-    }else{
+    }
+    else
+    {
         printf("Problema con el Nombre");
     }
 
@@ -258,4 +365,106 @@ int empleadoGetSueldo(eEmpleado* pEmp, float* sueldo)
 void empleadoDestroy(eEmpleado* pEmp)
 {
     free(pEmp);
+}
+
+void mostrarEmpleadosD(eEmpleado* e, int tam)
+{
+
+    if(e!=NULL && tam> 0)
+    {
+
+        for(int i = 0 ; i<tam; i++)
+        {
+            printf("ID      NOMBRE     SEXO      SUELDO");
+            mostrarEmpleadoD(e+i);
+
+        }
+
+    }
+
+}
+
+int mostrarEmpleados2(eEmpleado** e, int tam)
+{
+
+
+    int todoOk=0;
+    if(e!=NULL && tam> 0)
+    {
+        printf("ID      NOMBRE     SEXO      SUELDO\n\n");
+        for(int i = 0 ; i<tam; i++)
+        {
+
+            mostrarEmpleadoD(*(e+i));
+
+        }
+
+    }
+
+    return todoOk;
+}
+
+int inicializarEmpleados(eEmpleado ** pEmps, int tam)
+{
+    int todoOk=0;
+
+    if(pEmps != NULL && tam>0)
+    {
+
+        for(int i =0; i<tam ; i++)
+        {
+
+            *(pEmps+i)=NULL;
+
+
+        }
+        todoOk=1;
+    }
+
+
+    return todoOk;
+}
+
+int buscarLibre(eEmpleado** pEmps, int tam, int* pIndice)
+{
+
+    int todoOk=0;
+    *pIndice = -1;
+    if(pEmps != NULL && tam>0)
+    {
+
+        for(int i =0; i<tam ; i++)
+        {
+
+            if(*(pEmps+i)== NULL)
+            {
+               *pIndice=i;
+                break;
+            }
+
+        }
+        todoOk=1;
+    }
+
+
+    return todoOk;
+
+
+}
+
+int agrandarArray(eEmpleado*** pEmps, int* tam)
+{
+
+int todoOk=0;
+eEmpleado** aux;
+
+            aux=(eEmpleado**)realloc(*pEmps,sizeof(eEmpleado*)*(*tam+1));
+            if(aux!=NULL){
+                printf("Se agrando el array")
+                *pEmps=aux;
+                *tam++;
+                todoOk=1;
+            }
+
+    return todoOk;
 }
